@@ -1,8 +1,17 @@
+# Import necessary libraries
+import gdown
 import pickle
 import requests  # For fetching posters
 import streamlit as st
 
-# Load similarity matrix and movies DataFrame
+# Google Drive shared link ID
+file_id = "10VyOZrucbnkrVszqN1YlxVEfztezebRO"
+url = f"https://drive.google.com/uc?export=download&id={file_id}"
+
+# Download the similarity file
+gdown.download(url, 'similary.pkl', quiet=False)
+
+# Load the similarity matrix and movie data
 similarity = pickle.load(open('similary.pkl', 'rb'))
 movies = pickle.load(open('movies.pkl', 'rb'))  # This should be a DataFrame
 
@@ -10,17 +19,22 @@ movies = pickle.load(open('movies.pkl', 'rb'))  # This should be a DataFrame
 movies_list = movies['title'].values
 
 # Define TMDb API key and helper function to fetch posters
-API_KEY = "cdab35d28e20dc1bd7e62f15e925ee2f"
+API_KEY = "cdab35d28e20dc1bd7e62f15e925ee2f"  # Consider securing this in a .env file
 
 def fetch_poster(movie_title):
-    url = f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={movie_title}"
-    response = requests.get(url)
-    data = response.json()
-    if data['results']:
-        poster_path = data['results'][0]['poster_path']
-        return f"https://image.tmdb.org/t/p/w500{poster_path}"
-    else:
-        return "https://via.placeholder.com/500x750?text=No+Poster+Found"  # Placeholder for missing posters
+    try:
+        url = f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={movie_title}"
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
+        data = response.json()
+        if data['results']:
+            poster_path = data['results'][0]['poster_path']
+            return f"https://image.tmdb.org/t/p/w500{poster_path}"
+        else:
+            return "https://via.placeholder.com/500x750?text=No+Poster+Found"
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error fetching poster for {movie_title}: {e}")
+        return "https://via.placeholder.com/500x750?text=No+Poster+Found"
 
 # Define the recommend function
 def recommend(movie):
