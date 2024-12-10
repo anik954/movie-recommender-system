@@ -1,9 +1,7 @@
-# Movie Recommender System
+## Movie Recommender System
 
-This is a movie recommender system that uses machine learning to suggest movies based on a selected movie.
+To use this recommender system, you'll need the following `.pkl` files:
 
-## Setup
+- [similary.pkl (Download from Google Drive)](https://drive.google.com/file/d/10VyOZrucbnkrVszqN1YlxVEfztezebRO/view?usp=sharing)
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/anik954/movie-recommender-system.git
+Once downloaded, place the `.pkl` files in the project directory and run the application.
